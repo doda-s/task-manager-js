@@ -18,7 +18,13 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('login')
     signIn(@Body() signInDto: Record<string, any>) {
+        // Retorna o usuário autenticado
         return this.authService.signIn(signInDto.username, signInDto.password)
+    }
+
+    @Post('register')
+    signUp(@Body() signUpDto: Record<string, any>) {
+        return this.authService.signUp(signUpDto.username, signUpDto.password)
     }
 
     @UseGuards(AuthGuard)

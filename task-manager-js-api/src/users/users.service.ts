@@ -25,4 +25,15 @@ export class UsersService {
     async getUser(username: string) {
         return this.users.find(user => user.username === username);
     }
+
+    async addUser(username: string, pass: string) {
+        const lastUser = this.users[this.users.length-1]
+        var idToAdd: number = lastUser? lastUser.userId+1:1;
+        const userToAdd = {
+            userId: idToAdd,
+            username: username,
+            password: pass,
+        }
+        this.users.push(userToAdd)
+    }
 }
