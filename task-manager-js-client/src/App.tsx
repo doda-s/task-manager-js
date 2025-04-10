@@ -1,12 +1,11 @@
-import AuthComponent from './components/AuthComponent'
 import './styles/App.css'
+import HomeTemplate from './components/template/HomeTemplate';
 
 function App() {
   return(
-    <div className='flex justify-center align-middle w-dvw'>
-      <AuthComponent/>
+    <div className='h-dvh relative'>
+      <HomeTemplate/>
     </div>
   );
 }
-
 export default App
