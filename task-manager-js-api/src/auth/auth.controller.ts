@@ -6,10 +6,13 @@ import {
     HttpStatus, 
     Post, 
     Request, 
-    UseGuards 
+    UseGuards, 
+    UsePipes,
+    ValidationPipe
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { UserAuthDto } from 'src/users/dto/UserAuth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,14 +20,16 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    signIn(@Body() signInDto: Record<string, any>) {
+    signIn(@Body() signInDto: UserAuthDto) {
         // Retorna o usuário autenticado
-        return this.authService.signIn(signInDto.username, signInDto.password)
+        return this.authService.signIn(signInDto)
     }
 
     @Post('register')
-    signUp(@Body() signUpDto: Record<string, any>) {
-        return this.authService.signUp(signUpDto.username, signUpDto.password)
+    @UsePipes(new ValidationPipe()) // Ativa a validação do CreateUserDto
+    signUp(@Body() signUpDto: UserAuthDto) {
+        console.log(signUpDto);
+        return this.authService.signUp(signUpDto)
     }
 
     @UseGuards(AuthGuard)

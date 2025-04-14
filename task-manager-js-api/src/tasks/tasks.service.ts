@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
+import mongoose from 'mongoose';
+import { CreateTaskDto } from './dto/CreateTaskDto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TasksService {
+  constructor(private usersService: UsersService) {}
 
     private tasks = [
       {
@@ -48,55 +52,89 @@ export class TasksService {
       },
     ]
 
-    async getAllTasksByUser(userId: number) { 
-        return this.tasks.filter(task => task.userId === userId);
+    async getAllTasksByUserId(userId: string) { 
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+      return user?.tasks;
     }
 
-    async createTask(userId, task: Record<string, any>) {
-      const lastTask = this.tasks[this.tasks.length-1];
-      const taskIdToAdd = lastTask? lastTask.id+1:1;
-      const taskToAdd = {
-        "userId": Number(userId),
-        "id": taskIdToAdd,
-        "title": task.title,
-        "completed": false,
-      };
-      this.tasks.push(taskToAdd);
-      return {
-        message: "Tarefa criada!",
-        task: taskToAdd,
-      }
+    async createTask(userId: string, createTaskDto: CreateTaskDto) {
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+
+      const newTaskId = user.tasks.length > 0? Math.max(...user.tasks.map(task => task.taskId)) + 1
+      : 1;
+      user.tasks.push({
+        taskId: newTaskId,
+        title: createTaskDto.title,
+        completed: createTaskDto.completed ?? false,
+      });
+      await user.save()
     }
 
-    async setTaskAsCompleteById(userId, taskId) {
-      const task = this.tasks.find(t => t.userId === Number(userId) && t.id === Number(taskId));
-      if (task) {
-        task.completed = true;
-      }
+    async setTaskAsCompletedById(userId: string, taskId) {
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+      const task = user.tasks.find(t => Number(t.taskId) === Number(taskId));
+      if (!task) throw new HttpException("Tarefa não encontrada!", 404);
+      task.completed = true;
+      user.markModified('tasks');
+      await user.save()
       return {
         message: "Tarefa concluída!",
-        task: task,
       };
     }
 
-    async deleteTaskById(userId, taskId) {
-      this.tasks = this.tasks.filter(t => t.userId===Number(userId) && t.id !==Number(taskId));
+    async setTaskAsNotCompletedById(userId: string, taskId) {
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+      const task = user.tasks.find(t => Number(t.taskId) === Number(taskId));
+      if (!task) throw new HttpException("Tarefa não encontrada!", 404);
+      task.completed = false;
+      user.markModified('tasks');
+      await user.save()
+      return {
+        message: "Tarefa não concluída!",
+      };
+    }
+
+    async deleteTaskById(userId: string, taskId) {
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+
+      user.tasks = user.tasks.filter(t => Number(t.taskId)!==Number(taskId));
+      user.markModified('tasks');
+      await user.save()
       return { message: 'Tarefa deletada!' };
     }
 
-    async updateTaskById(userId, taskId, body: Record<string, any>) {
-      let updatedTask
-      this.tasks.forEach((task, index) => {
-        if (task.userId === Number(userId) && task.id === Number(taskId)) {
-          task.title = body.title;
-          this.tasks[index] = task;
-          updatedTask = task
+    async updateTaskById(userId, taskId, createTaskDto: CreateTaskDto) {
+      const idIsValid = mongoose.Types.ObjectId.isValid(userId);
+      if (!idIsValid) throw new HttpException("ID de usuário é inválido!", 404);
+      const user = await this.usersService.getUserById(userId);
+      if (!user) throw new HttpException("Usuário não encontrado!", 404);
+      user.tasks.forEach((task, index) => {
+        if (Number(task.taskId) === Number(taskId)) {
+          task.title = createTaskDto.title;
+          task.completed = createTaskDto.completed ?? false;
+          user.tasks[index] = task;
           return;
         }
       });
+      user.markModified('tasks');
+      await user.save()
       return {
         message: 'Tarefa atualizada!',
-        task: updatedTask,
       }
     }
 

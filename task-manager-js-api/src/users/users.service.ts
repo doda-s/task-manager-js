@@ -1,39 +1,26 @@
 import { Injectable } from '@nestjs/common';
-
-export type User = any;
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from 'src/schemas/user.schema';
+import { UserAuthDto } from './dto/UserAuth.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
-    // Não se deve colocar os dados de usuários diretamente no código.
-    // O usuários estão inseridos diretamente no código
-    // apenas para testes. 
-    // Isso aqui deve ser substituido por uma integração com o
-    // banco de dados.
-    private readonly users = [
-        {
-            userId: 1,
-            username: 'john',
-            password: 'changeme',
-        },
-        {
-            userId: 2,
-            username: 'maria',
-            password: 'guess',
-        },
-    ];
+    constructor(
+        @InjectModel(User.name) private UserModel: Model<User>
+    ) {}
 
-    async getUser(username: string) {
-        return this.users.find(user => user.username === username);
+    async getUserById(id: string) {
+        return await this.UserModel.findById(id)
     }
 
-    async addUser(username: string, pass: string) {
-        const lastUser = this.users[this.users.length-1]
-        var idToAdd: number = lastUser? lastUser.userId+1:1;
-        const userToAdd = {
-            userId: idToAdd,
-            username: username,
-            password: pass,
-        }
-        this.users.push(userToAdd)
+    async getUserByUsername(username: string) {
+        return await this.UserModel.findOne({ username }).exec();
+    }
+
+    async createUser(createUserDto: UserAuthDto) {
+        const newUser = new this.UserModel(createUserDto)
+        await newUser.save()
     }
 }

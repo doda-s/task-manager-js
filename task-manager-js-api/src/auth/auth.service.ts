@@ -1,6 +1,7 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UserAuthDto } from 'src/users/dto/UserAuth.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -11,27 +12,22 @@ export class AuthService {
         private configService: ConfigService,
     ) {}
 
-    async signIn(username: string, pass: string): Promise<{ access_token: string }> {
+    async signIn(userDto: UserAuthDto) { // Promise<{ access_token: string }>
         // Verifica se o username informado é válido e se a senha
         // é compatível. Caso não seja, lança uma UnauthorizedException().
         // Se for, retorna um access token JWT.
-        const user = await this.usersService.getUser(username);
+        const user = await this.usersService.getUserByUsername(userDto.username)
 
-        if (user?.password !== pass) {
-            throw new UnauthorizedException();
+        if (user?.password !== userDto.password) {
+          throw new UnauthorizedException("Senha inválida!");
         }
-        const payload = { sub: user.userId, username: user.username };
+        const payload = { sub: user?._id, username: user.username };
         return { access_token: await this.jwtService.signAsync(payload) }
     }
 
-    async signUp(username: string, pass: string) {
-        if (await this.usersService.getUser(username)) {
-            throw new ConflictException("Username is already in use.");
-        }
-        await this.usersService.addUser(username, pass);
-        return {
-            message: "User created successfully!"
-        }
+    async signUp(createUserDto: UserAuthDto) {
+      this.usersService.createUser(createUserDto);
+      return this.signIn(createUserDto);
     }
 
     getJwtSecret(): string | undefined {
