@@ -28,7 +28,6 @@ export class AuthController {
     @Post('register')
     @UsePipes(new ValidationPipe()) // Ativa a validação do CreateUserDto
     signUp(@Body() signUpDto: UserAuthDto) {
-        console.log(signUpDto);
         return this.authService.signUp(signUpDto)
     }
 
