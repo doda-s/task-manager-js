@@ -1,10 +1,35 @@
 import { useRef, useState } from 'react';
+import { Auth } from '../../services/auth';
 import '../../styles/Auth.css'
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+
+const authService = new Auth()
+
+async function signUp(usernameInputRef:any, passwordInputRef:any, navigate: NavigateFunction) {
+    console.log("Debug SignUp") // Debug
+    authService.signUp(usernameInputRef, passwordInputRef).then(response => {
+        if (response.status == 200) {
+            navigate('/dashboard');
+            return;
+        }
+    })
+}
+
+async function signIn(usernameInputRef:any, passwordInputRef:any, navigate: NavigateFunction) {
+    console.log("Debug SignIn") // Debug
+    authService.signIn(usernameInputRef, passwordInputRef).then(response => {
+        if (response.status == 200) {
+            navigate('/dashboard');
+            return;
+        }
+    })
+}
 
 function AuthComponent() {
     const [action, setAction] = useState("Sign Up");
     const usernameInputRef = useRef<HTMLInputElement>(null);
     const passwordInputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate()
     
 
     return(
@@ -23,7 +48,7 @@ function AuthComponent() {
                     <input className="w-full h-10 p-2.5 border" type="password" name="password" placeholder='Senha' ref={passwordInputRef}/>
                 </section>
                 <section className='flex justify-center'>
-                    {action==="Sign Up"?<button>Criar</button>:<button>Entrar</button>}
+                    {action==="Sign Up"?<button className='cursor-pointer' onClick={async () => await signUp(usernameInputRef.current?.value, passwordInputRef.current?.value, navigate)}>Criar</button>:<button className='cursor-pointer' onClick={async () => await signIn(usernameInputRef.current?.value, passwordInputRef.current?.value, navigate)}>Entrar</button>}
                 </section>
                 {action==="Sign Up"? <p className='self-center'>Possui uma conta? <span className='text-blue-500 cursor-pointer' onClick={()=> setAction("Login")}>Entrar</span>.</p>:<p className='self-center'>Não possui uma conta? <span className='text-blue-500 cursor-pointer' onClick={()=> setAction("Sign Up")}>Criar</span>.</p>}
             </div>
@@ -31,5 +56,4 @@ function AuthComponent() {
     
     );
 }
-
 export default AuthComponent;

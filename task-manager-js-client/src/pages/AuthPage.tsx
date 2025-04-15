@@ -1,9 +1,13 @@
-import AuthComponent from "../components/template/AuthTemplate";
+import AuthTemplate from "../components/template/AuthTemplate";
+import HeaderOrganism from "../components/organisms/HeaderOrganism";
 
 function AuthPage() {
     return(
-        <div className='flex justify-center h-dvh items-center'>
-            <AuthComponent/>
+        <div>
+            <HeaderOrganism/>
+            <div className='flex justify-center h-dvh items-center'>
+                <AuthTemplate/>
+            </div>
         </div>
     );
 }
