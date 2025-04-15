@@ -20,7 +20,11 @@ export class UsersService {
     }
 
     async createUser(createUserDto: UserAuthDto) {
-        const newUser = new this.UserModel(createUserDto)
-        await newUser.save()
+        try {
+            const newUser = new this.UserModel(createUserDto)
+            await newUser.save()
+        } catch(error) {
+            console.log('Error: ' + error)
+        }
     }
 }
