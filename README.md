@@ -4,7 +4,6 @@ A **Task Manager API** é uma API RESTful desenvolvida com [Nest.js](https://nes
 
 > ⚠️ Projeto em estágio inicial de desenvolvimento.
 
----
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -12,7 +11,6 @@ A **Task Manager API** é uma API RESTful desenvolvida com [Nest.js](https://nes
 - [Nest.js](https://nestjs.com/)
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
 - [Mongoose](https://mongoosejs.com/)
----
 
 ## 📦 Instalação
 
@@ -27,8 +25,6 @@ A **Task Manager API** é uma API RESTful desenvolvida com [Nest.js](https://nes
    npm install
    ```
 
----
-
 ## ▶️ Como executar
 
 - Para rodar a aplicação:
@@ -40,8 +36,6 @@ A **Task Manager API** é uma API RESTful desenvolvida com [Nest.js](https://nes
   ```bash
   npm run start:dev
   ```
-
----
 
 ## 🧪 Autenticação
 
@@ -85,8 +79,6 @@ A autenticação é baseada em **JWT (JSON Web Token)**. O fluxo funciona assim:
 
 - `GET /auth/profile`: retorna o perfil do usuário autenticado (necessita token no header Authorization).
 
----
-
 ## 📡 Endpoints de Tarefas
 
 > Todos os endpoints abaixo requerem autenticação via token JWT.
@@ -123,8 +115,6 @@ A autenticação é baseada em **JWT (JSON Web Token)**. O fluxo funciona assim:
 - `DELETE /tasks/delete/:id`  
   Remove a tarefa com o ID fornecido.
 
----
-
 ## ✅ Funcionalidades implementadas
 
 - [x] Autenticação com JWT  
@@ -136,28 +126,18 @@ A autenticação é baseada em **JWT (JSON Web Token)**. O fluxo funciona assim:
 - [x] Marcar tarefas como não concluídas  
 - [x] Integração com MongoDB (via Mongoose)
 
----
-
 ## ❗ Requisitos
 
 - Node.js versão 20 ou superior
-
----
 
 ## 📄 Licença
 
 GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 
----
-
 ## 🤝 Contribuições
 
 Atualmente este projeto **não aceita contribuições externas**, pois é voltado para estudos pessoais.
 
----
-
 ## 📌 Observações
   
 - Este projeto **não possui deploy** nem está disponível no npm.
-
----
