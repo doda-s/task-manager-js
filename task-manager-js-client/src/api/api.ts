@@ -10,7 +10,8 @@ export class API {
         const axiosConfig = {
             headers: {'Content-Type': 'application/json'},
         }
-        return await axios.post(this.apiUrl()+endpoint, dataString, axiosConfig);
+        const response = await axios.post(this.apiUrl()+endpoint, dataString, axiosConfig);
+        return response;
     }
 
     public async allTasks(endpoint: string, token: string|null) {

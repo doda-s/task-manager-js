@@ -48,10 +48,10 @@ function DashboardTemplate() {
 
     return(
         <>
-            <HeaderOrganism showAuthButtons={false}/>
+            <HeaderOrganism/>
             <div className="pt-32 pb-16">
                 <div className="flex flex-col items-center">
-                    <span className="text-5xl text-[##1E1E1E]">Pronto para concluir suas tarefas?</span>
+                    <span className="text-5xl text-[#1E1E1E]">Pronto para concluir suas tarefas?</span>
                     <div className="w-180 h-0.5 rounded-full bg-[#1E1E1E] mt-10 mb-7"></div>
                 </div>
                 <div>
